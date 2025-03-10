@@ -33,12 +33,12 @@ Geno2Plink <- function(lanc, nloci, samplesize, filename, FID=FID, prs, pheno, g
   fam = data.frame(FID=FID,IID=1:samplesize, FID=0, MID=0, SEX=0, Pheno=-9 )
   write.table(fam, file = paste0(filename, ".tfam"), 
               quote=FALSE, sep = '\t', row.names = FALSE, col.names = FALSE)
-  PRS = cbind(fam[,c(1,2)], prs)
-  write.table(PRS, file = paste0(filename, ".prs"), 
-              quote=FALSE, sep = '\t', row.names = FALSE, col.names = FALSE)
-  Pheno = cbind(fam[,c(1,2)], pheno)
-  write.table(Pheno, file = paste0(filename, ".pheno"), 
-              quote=FALSE, sep = '\t', row.names = FALSE, col.names = FALSE)
+  #PRS = cbind(fam[,c(1,2)], prs)
+  #write.table(PRS, file = paste0(filename, ".prs"), 
+  #            quote=FALSE, sep = '\t', row.names = FALSE, col.names = FALSE)
+  #Pheno = cbind(fam[,c(1,2)], pheno)
+  #write.table(Pheno, file = paste0(filename, ".pheno"), 
+  #            quote=FALSE, sep = '\t', row.names = FALSE, col.names = FALSE)
   GAnc = cbind(fam[,c(1,2)], ganc)
   write.table(GAnc, file = paste0(filename, ".ganc"), 
               quote=FALSE, sep = '\t', row.names = FALSE, col.names = FALSE)
