@@ -2,8 +2,23 @@
 
 # load files
 library(data.table)
-df_HI=fread("../data/admix_HI_GREML_vgamma_CI_exp.txt", header = T)
-df_CGF=fread("../data/admix_CGF_GREML_vgamma_CI_exp.txt", header = T)
+filename="admix_greml_vgamma_CI_P0_P9_w-wo_ganc.txt"
+df_CI=read.table(filename, header=T)
+
+#get models separated
+df_HI_CI <- df_CI %>% filter(model == "HI")
+df_CGF_CI <- df_CI %>% filter(model == "CGF")
+
+#merge with expected values
+exp_HI <- fread("admix_HI_vg_vgamma.txt", header = T)
+exp_CGF <- fread("admix_CGF_vg_vgamma.txt", header = T)
+exp_HI_tg <- exp_HI %>% filter(theta == "0.5", gen == "20", P %in% c(0,0.9))
+exp_CGF_tg <- exp_CGF %>% filter(theta == "0.5", gen == "20", P %in% c(0,0.9))
+
+#merge exp with data
+df_HI_CI <- merge(exp_HI_tg, df_HI_CI, by = c("t", "P", "cov"), all.x = T)
+df_CGF_CI <- merge(exp_CGF_tg, df_CGF_CI, by = c("t", "P", "cov"), all.x = T)
+
 
 # function to plot 
 # expectation VS standard scaled GCTA results
@@ -11,7 +26,7 @@ fig4A=function(data, yobs, CIl, CIr, legend.position="right"){
   library(ggplot2)
   ggplot() +
     geom_ribbon(data=data, alpha=0.2, linetype = 0, #remove the boarder
-              aes(x=t, 
+              aes(x=t,
                   ymin = CIl, ymax = CIr,
                   group=interaction(P, cov),
                 fill=interaction(P, cov))) +
@@ -133,7 +148,7 @@ fig4C=function(data, yobs, CIl, CIr, legend.position="right"){
                   group=interaction(P, cov), 
                   color=interaction(P, cov))) +
     # label P
-    annotate(geom = "text", x=16, y=0.12, label="P=0.9") +
+    annotate(geom = "text", x=16, y=0.22, label="P=0.9") +
     annotate(geom = "text", x=16, y=0.05, label="P=0") +
     ylim(c(0, 0.25))+
     scale_linetype_manual("", 
@@ -249,9 +264,9 @@ fig4D_w=function(data, yobs, CIl, CIr, legend.position="right"){
                # color=interaction(P, cov)
                 )) +
      # label P
-  annotate(geom = "text", x=16, y=0.027, label="P=0.9") +
-  annotate(geom = "text", x=16, y=0.07, label="P=0") +
-  ylim(c(-0.01, 0.1))+
+  annotate(geom = "text", x=16, y=0.015, label="P=0.9") +
+  annotate(geom = "text", x=16, y=0.11, label="P=0") +
+  ylim(c(-0.01, 0.15))+
   scale_linetype_manual("", 
                        breaks = c("obs",   "exp"),
                        values = c("solid",  "11"),
@@ -288,7 +303,7 @@ fig4color=function(data){
   library(ggplot2)
   ggplot() +
     geom_line(data=data, linewidth=0.9, alpha = 0.65, #transparent this line
-              aes(x=t, y = vgamma_GRMstd_mean,                               
+              aes(x=t, y = vgamma_standard.mean,                               
                   linetype = "obs",
                   group=interaction(P, cov), 
                   color=interaction(P, cov))) +
@@ -322,51 +337,61 @@ fig4color=function(data){
     )}
 
 # plot
-HI_color=fig4color(data=df_HI)
+HI_color=fig4color(data=df_HI_CI)
 
 
-HIa=fig4A(data=df_HI, 
-          yobs=df_HI$vgamma_GRMstd_mean, 
-          CIl = df_HI$vgamma_GRMstd_CIl,
-          CIr = df_HI$vgamma_GRMstd_CIr,
+HIa=fig4A(data=df_HI_CI, 
+          yobs=df_HI_CI$vgamma_standard.mean, 
+          CIl = df_HI_CI$vgamma_standard.CI95l,
+          CIr = df_HI_CI$vgamma_standard.CI95r,
           #title="Hybrid Isolation", 
           legend.position = "none")
-CGFa=fig4A(data=df_CGF, 
-          yobs=df_CGF$vgamma_GRMstd_mean, 
-          CIl = df_CGF$vgamma_GRMstd_CIl,
-          CIr = df_CGF$vgamma_GRMstd_CIr) 
+print(HIa)
+CGFa=fig4A(data=df_CGF_CI, 
+          yobs=df_CGF_CI$vgamma_standard.mean, 
+          CIl = df_CGF_CI$vgamma_standard.CI95l,
+          CIr = df_CGF_CI$vgamma_standard.CI95r) 
            #title="Continuous Gene Flow")
+print(CGFa)
 
-HIb=fig4B(data=df_HI,
-          yobs=df_HI$vgamma_GRMstd_mean, 
-          CIl = df_HI$vgamma_GRMstd_CIl,
-          CIr = df_HI$vgamma_GRMstd_CIr,
+HIb=fig4B(data=df_HI_CI,
+          yobs=df_HI_CI$vgamma_standard.mean, 
+          CIl = df_HI_CI$vgamma_standard.CI95l,
+          CIr = df_HI_CI$vgamma_standard.CI95r,
           legend.position = "none")
+print(HIb)
 
-CGFb=fig4B(data=df_CGF,
-          yobs=df_CGF$vgamma_GRMstd_mean, 
-          CIl = df_CGF$vgamma_GRMstd_CIl,
-          CIr = df_CGF$vgamma_GRMstd_CIr) 
+CGFb=fig4B(data=df_CGF_CI,
+          yobs=df_CGF_CI$vgamma_standard.mean, 
+          CIl = df_CGF_CI$vgamma_standard.CI95l,
+          CIr = df_CGF_CI$vgamma_standard.CI95r) 
+print(CGFb)
 
-HIc=fig4C(data=df_HI, 
-          yobs=df_HI$vgamma_GRMvarX_mean, 
-          CIl = df_HI$vgamma_GRMvarX_CIl,
-          CIr = df_HI$vgamma_GRMvarX_CIr,
+HIc=fig4C(data=df_HI_CI, 
+          yobs=df_HI_CI$vgamma_varX.mean, 
+          CIl = df_HI_CI$vgamma_varX.CI95l,
+          CIr = df_HI_CI$vgamma_varX.CI95r,
           legend.position = "none")
-CGFc=fig4C(data=df_CGF,
-          yobs=df_CGF$vgamma_GRMvarX_mean, 
-          CIl = df_CGF$vgamma_GRMvarX_CIl,
-          CIr = df_CGF$vgamma_GRMvarX_CIr)
+print(HIc)
 
-HId=fig4D(data=df_HI, 
-          yobs=df_HI$vgamma_GRMld_mean, 
-          CIl = df_HI$vgamma_GRMld_CIl,
-          CIr = df_HI$vgamma_GRMld_CIr,
+CGFc=fig4C(data=df_CGF_CI,
+          yobs=df_CGF_CI$vgamma_varX.mean, 
+          CIl = df_CGF_CI$vgamma_varX.CI95l,
+          CIr = df_CGF_CI$vgamma_varX.CI95r)
+print(CGFc)
+
+HId=fig4D(data=df_HI_CI, 
+          yobs=df_HI_CI$vgamma_ld.mean, 
+          CIl = df_HI_CI$vgamma_ld.CI95l,
+          CIr = df_HI_CI$vgamma_ld.CI95r,
           legend.position = "none")
-CGFd=fig4D(data=df_CGF,
-          yobs=df_CGF$vgamma_GRMld_mean, 
-          CIl = df_CGF$vgamma_GRMld_CIl,
-          CIr = df_CGF$vgamma_GRMld_CIr,)
+print(HId)
+
+CGFd=fig4D(data=df_CGF_CI,
+          yobs=df_CGF_CI$vgamma_ld.mean, 
+          CIl = df_CGF_CI$vgamma_ld.CI95l,
+          CIr = df_CGF_CI$vgamma_ld.CI95r)
+print(CGFd)
 
 library(ggpubr)
 plt_wo=ggarrange(HIa, CGFa, HIb, CGFb, HIc, CGFc, HId, CGFd,
@@ -375,47 +400,55 @@ plt_wo=ggarrange(HIa, CGFa, HIb, CGFb, HIc, CGFc, HId, CGFd,
               align = c("h")) 
 
 # plot for gcta_wganc
-HIa_w=fig4A(data=df_HI, 
-            yobs = df_HI$vgamma_GRMstd_ganc_mean,
-            CIl = df_HI$vgamma_GRMstd_ganc_CIl,
-            CIr = df_HI$vgamma_GRMstd_ganc_CIr,
+HIa_w=fig4A(data=df_HI_CI, 
+            yobs = df_HI_CI$vgamma_standard_ganc.mean,
+            CIl = df_HI_CI$vgamma_standard_ganc.CI95l,
+            CIr = df_HI_CI$vgamma_standard_ganc.CI95r,
             #title="Hybrid Isolation", 
             legend.position = "none")
-CGFa_w=fig4A(data=df_CGF, 
-            yobs = df_CGF$vgamma_GRMstd_ganc_mean,
-            CIl = df_CGF$vgamma_GRMstd_ganc_CIl,
-            CIr = df_CGF$vgamma_GRMstd_ganc_CIr)
+print(HIa_w)
+CGFa_w=fig4A(data=df_CGF_CI, 
+            yobs = df_CGF_CI$vgamma_standard_ganc.mean,
+            CIl = df_CGF_CI$vgamma_standard_ganc.CI95l,
+            CIr = df_CGF_CI$vgamma_standard_ganc.CI95r)
              #title="Continuous Gene Flow")
+print(CGFa_w)
 
-HIb_w=fig4B(data=df_HI, 
-            yobs = df_HI$vgamma_GRMstd_ganc_mean,
-            CIl = df_HI$vgamma_GRMstd_ganc_CIl,
-            CIr = df_HI$vgamma_GRMstd_ganc_CIr,
+HIb_w=fig4B(data=df_HI_CI, 
+            yobs = df_HI_CI$vgamma_standard_ganc.mean,
+            CIl = df_HI_CI$vgamma_standard_ganc.CI95l,
+            CIr = df_HI_CI$vgamma_standard_ganc.CI95r,
             legend.position = "none")
-CGFb_w=fig4B(data=df_CGF,
-            yobs = df_CGF$vgamma_GRMstd_ganc_mean,
-            CIl = df_CGF$vgamma_GRMstd_ganc_CIl,
-            CIr = df_CGF$vgamma_GRMstd_ganc_CIr)
+print(HIb_w)
+CGFb_w=fig4B(data=df_CGF_CI,
+            yobs = df_CGF_CI$vgamma_standard_ganc.mean,
+            CIl = df_CGF_CI$vgamma_standard_ganc.CI95l,
+            CIr = df_CGF_CI$vgamma_standard_ganc.CI95r)
+print(CGFb_w)
 
-HIc_w=fig4C(data=df_HI, 
-            yobs = df_HI$vgamma_GRMvarX_ganc_mean,
-            CIl = df_HI$vgamma_GRMvarX_ganc_CIl,
-            CIr = df_HI$vgamma_GRMvarX_ganc_CIr,
+HIc_w=fig4C(data=df_HI_CI, 
+            yobs = df_HI_CI$vgamma_varX_ganc.mean,
+            CIl = df_HI_CI$vgamma_varX_ganc.CI95l,
+            CIr = df_HI_CI$vgamma_varX_ganc.CI95r,
             legend.position = "none")
-CGFc_w=fig4C(data=df_CGF,
-            yobs = df_CGF$vgamma_GRMvarX_ganc_mean,
-            CIl = df_CGF$vgamma_GRMvarX_ganc_CIl,
-            CIr = df_CGF$vgamma_GRMvarX_ganc_CIr)
+print(HIc_w)
+CGFc_w=fig4C(data=df_CGF_CI,
+            yobs = df_CGF_CI$vgamma_varX_ganc.mean,
+            CIl = df_CGF_CI$vgamma_varX_ganc.CI95l,
+            CIr = df_CGF_CI$vgamma_varX_ganc.CI95r)
+print(CGFc_w)
 
-HId_w=fig4D_w(data=df_HI, 
-            yobs = df_HI$vgamma_GRMld_ganc_mean,
-            CIl = df_HI$vgamma_GRMld_ganc_CIl,
-            CIr = df_HI$vgamma_GRMld_ganc_CIr,
+HId_w=fig4D_w(data=df_HI_CI, 
+            yobs = df_HI_CI$vgamma_ld_ganc.mean,
+            CIl = df_HI_CI$vgamma_ld_ganc.CI95l,
+            CIr = df_HI_CI$vgamma_ld_ganc.CI95r,
             legend.position = "none")
-CGFd_w=fig4D_w(data=df_CGF,
-            yobs = df_CGF$vgamma_GRMld_ganc_mean,
-            CIl = df_CGF$vgamma_GRMld_ganc_CIl,
-            CIr = df_CGF$vgamma_GRMld_ganc_CIr)
+print(HId_w)
+CGFd_w=fig4D_w(data=df_CGF_CI,
+            yobs = df_CGF_CI$vgamma_ld_ganc.mean,
+            CIl = df_CGF_CI$vgamma_ld_ganc.CI95l,
+            CIr = df_CGF_CI$vgamma_ld_ganc.CI95r)
+print(CGFd_w)
 
 
 plt_wganc=ggarrange(HIa_w, CGFa_w, HIb_w, CGFb_w, HIc_w, CGFc_w, HId_w, CGFd_w, 
@@ -434,5 +467,5 @@ plt=ggarrange(plt_wo, '', plt_wganc,
                           heights = unit(c(9, 0.8), "in")
                           ) 
 
-ggsave("../figs/GREML_vgamma_wowganc_CI.png", plot=plt,
+ggsave("GREML_vgamma_wowganc_CI_nb.png", plot=plt,
        width = 16, height = 10, dpi = 300, units = "in", device='png')

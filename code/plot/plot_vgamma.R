@@ -1,9 +1,9 @@
 # Plot behavior of vgamma
 
 # load data
-filename1="../data/admix_CGF_vg_vgamma.txt"
+filename1="admix_CGF_vg_vgamma.txt"
 df_CGF=read.table(filename1, header=T)
-filename2="../data/admix_HI_vg_vgamma.txt"
+filename2="admix_HI_vg_vgamma.txt"
 df_HI=read.table(filename2, header=T)
 
 
@@ -99,6 +99,6 @@ plt=ggarrange(vgammaHI, vgammaCGF, ncol = 2, nrow = 1,
           legend = "none") %>% # to move the legend closer 
   gridExtra::grid.arrange(get_legend(vgammaHI), heights = unit(c(100, 5), "mm"))
 
-ggsave("../figs/Fig_Vgamma.png", plot=plt,
+ggsave("FigS2_Vgamma.png", plot=plt,
        width = 8, height = 5, dpi = 300, units = "in", device='png')
 

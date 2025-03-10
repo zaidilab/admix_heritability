@@ -1,9 +1,9 @@
 # Plot behavior of vg 4 terms
 
 # load data
-filename1="../data/admix_CGF_vg_vgamma.txt"
+filename1="admix_CGF_vg_vgamma.txt"
 df_CGF=read.table(filename1, header=T)
-filename2="../data/admix_HI_vg_vgamma.txt"
+filename2="admix_HI_vg_vgamma.txt"
 df_HI=read.table(filename2, header=T)
 
 
@@ -209,15 +209,16 @@ vg1CGF=myplot_top(data=CGF0.5,
          yexp=CGF0.5$va.term1,
          ylab="(1.1)", 
          #title="Continuous Gene Flow",
-         ylim1=0.92, ylim2 = 0.95 )
-
+         ylim1=0.9, ylim2 = 0.93 )
+print(vg1CGF)
 
 vg1HI=myplot_top(data=HI0.5, 
          yobs=HI0.5$vg.term1, 
          yexp=HI0.5$va.term1,
          ylab="(1.1)", 
          #title="Hybrid Isolation",
-         ylim1=0.92, ylim2 = 0.95 )
+         ylim1=0.89, ylim2 = 0.92 )
+print(vg1HI)
 
 vg2CGF=myplot_mid(data=CGF0.5, 
          yobs=CGF0.5$vg.term2, 
@@ -225,6 +226,7 @@ vg2CGF=myplot_mid(data=CGF0.5,
          ylab="(1.2)", 
          #title="Continuous Gene Flow",
          ylim1=0, ylim2 = 0.1 )
+print(vg2CGF)
 
 
 vg2HI=myplot_mid(data=HI0.5, 
@@ -233,20 +235,23 @@ vg2HI=myplot_mid(data=HI0.5,
          ylab="(1.2)", 
          #title="Hybrid Isolation",
          ylim1=0, ylim2 = 0.1 )
+print(vg2HI)
 
 vg3CGF=myplot_mid(data=CGF0.5, 
          yobs=CGF0.5$vg.term3, 
          yexp=CGF0.5$va.term3,
          ylab="(1.3)", 
          #title="Continuous Gene Flow",
-         ylim1=0, ylim2 = 0.065)
+         ylim1=0, ylim2 = 0.1)
+print(vg3CGF)
 
 vg3HI=myplot_mid(data=HI0.5, 
          yobs=HI0.5$vg.term3, 
          yexp=HI0.5$va.term3,
          ylab="(1.3)", 
          #title="Hybrid Isolation",
-         ylim1=0, ylim2 = 0.065 )
+         ylim1=0, ylim2 = 0.1)
+print(vg3HI)
 
 vg4CGF=myplot_bot(data=CGF0.5, 
          yobs=CGF0.5$vg.term4, 
@@ -254,6 +259,7 @@ vg4CGF=myplot_bot(data=CGF0.5,
          ylab="(1.4)", 
          #title="Continuous Gene Flow",
          ylim1=-0.25, ylim2 = 1.1)
+print(vg4CGF)
 
 
 vg4HI=myplot_bot(data=HI0.5, 
@@ -262,6 +268,7 @@ vg4HI=myplot_bot(data=HI0.5,
          ylab="(1.4)", 
          #title="Hybrid Isolation",
          ylim1=-0.25, ylim2 = 1.1 )
+print(vg4HI)
 
 library(ggpubr)
 require(grid)
@@ -298,7 +305,7 @@ plt=
                           heights = unit(c(5, 0.6), "in")
                           )
 
-ggsave("../figs/Fig_vgterms.png", plot=plt,
+ggsave("FigS1_vg4terms.png", plot=plt,
        width = 8, height = 6,
        dpi = 300, units = "in", device='png')
 

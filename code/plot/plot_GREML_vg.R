@@ -1,11 +1,34 @@
 #Plot GREML results
+library(tidyverse)
 
-# CGF
-filename="../data/admix_CGF_GREML_vgveh2_CI_exp.txt"
-df_CGF_CI=read.table(filename, header=T)
-# HI
-filename="../data/admix_HI_GREML_vgveh2_CI_exp.txt"
-df_HI_CI=read.table(filename, header=T)
+# load data
+filename="admix_greml_vg_CI_P0_P9_w-wo_ganc.txt"
+df_CI=read.table(filename, header=T)
+
+#get models separated
+df_HI_CI <- df_CI %>% filter(model == "HI")
+df_CGF_CI <- df_CI %>% filter(model == "CGF")
+
+#merge with expected values
+exp <- fread("admix_sim_expectations_02132025.txt", header = T)
+exp_CGF <- exp %>% filter(model == "CGF")
+exp_HI <- exp %>% filter (model == "HI")
+
+#rename colnames for cov and t
+names(exp_CGF)[names(exp_CGF) == 'arch'] <- 'cov'
+names(exp_HI)[names(exp_HI) == 'arch'] <- 'cov'
+names(exp_CGF)[names(exp_CGF) == 'time'] <- 't'
+names(exp_HI)[names(exp_HI) == 'time'] <- 't'
+
+#merge exp with data
+df_HI_CI <- merge(df_HI_CI, exp_HI, by = c("t", "P", "cov"))
+df_CGF_CI <- merge(df_CGF_CI, exp_CGF, by = c("t", "P", "cov"))
+
+#save final files
+write.table(df_HI_CI, "admix_greml_HI_CI_exp.txt", sep = '\t',
+            row.names = F, col.names = T, quote = F)
+write.table(df_CGF_CI, "admix_greml_CGF_CI_exp.txt", sep = '\t',
+            row.names = F, col.names = T, quote = F)
 
 # A function factory for getting integer y-axis values.
 integer_breaks <- function(n = 5, ...) {
@@ -24,7 +47,7 @@ fig4A=function(data, yobs, yexp, ylab,
                legend.position="right"){
   library(ggplot2)
   ggplot() +
-    geom_ribbon(data=data, alpha=0.2, linetype = 0, #remove the boarder
+  geom_ribbon(data=data, alpha=0.2, linetype = 0, #remove the boarder
               aes(x=t, 
                   ymin = CIl, ymax = CIr,
                   group=interaction(P, cov),
@@ -77,36 +100,41 @@ fig4A=function(data, yobs, yexp, ylab,
 
 
 HIa_wo=fig4A(data=df_HI_CI, 
-          yobs = df_HI_CI$vg_gcta.x.mean, 
-          yexp = df_HI_CI$exp.vg,
+          yobs = df_HI_CI$vg_standard.mean, 
+          yexp = df_HI_CI$exp.total,
           ylab = expression(hat(sigma)[u]^2),
-          CIl = df_HI_CI$vg_gcta.x.CI95l,
-          CIr = df_HI_CI$vg_gcta.x.CI95r,
+          CIl = df_HI_CI$vg_standard.CI95l,
+          CIr = df_HI_CI$vg_standard.CI95r,
           legend.position = "none") 
+
+print(HIa_wo)
 
 CGFa_wo=fig4A(data=df_CGF_CI, 
-          yobs = df_CGF_CI$vg_gcta.x.mean, 
-          yexp = df_CGF_CI$exp.vg,
+          yobs = df_CGF_CI$vg_standard.mean, 
+          yexp = df_CGF_CI$exp.total,
           ylab = expression(hat(sigma)[u]^2),
-          CIl = df_CGF_CI$vg_gcta.x.CI95l,
-          CIr = df_CGF_CI$vg_gcta.x.CI95r,
+          CIl = df_CGF_CI$vg_standard.CI95l,
+          CIr = df_CGF_CI$vg_standard.CI95r,
           legend.position = "right") 
+print(CGFa_wo)
 
 HIa_wganc=fig4A(data=df_HI_CI, 
-          yobs = df_HI_CI$vg_gcta_wganc.x.mean, 
-          yexp = df_HI_CI$exp.vg,
+          yobs = df_HI_CI$vg_standard_ganc.mean, 
+          yexp = df_HI_CI$exp.total,
           ylab = expression(hat(sigma)[u]^2),
-          CIl = df_HI_CI$vg_gcta_wganc.x.CI95l,
-          CIr = df_HI_CI$vg_gcta_wganc.x.CI95r,
+          CIl = df_HI_CI$vg_standard_ganc.CI95l,
+          CIr = df_HI_CI$vg_standard_ganc.CI95r,
           legend.position = "none") 
+print(HIa_wganc)
  
 CGFa_wganc=fig4A(data=df_CGF_CI, 
-          yobs = df_CGF_CI$vg_gcta_wganc.x.mean, 
-          yexp = df_CGF_CI$exp.vg,
+          yobs = df_CGF_CI$vg_standard_ganc.mean, 
+          yexp = df_CGF_CI$exp.total,
           ylab = expression(hat(sigma)[u]^2),
-          CIl = df_CGF_CI$vg_gcta_wganc.x.CI95l,
-          CIr = df_CGF_CI$vg_gcta_wganc.x.CI95r,
+          CIl = df_CGF_CI$vg_standard_ganc.CI95l,
+          CIr = df_CGF_CI$vg_standard_ganc.CI95r,
           legend.position = "right") 
+print(CGFa_wganc)
 
 fig4B=function(data, yobs, CIl, CIr, legend.position="right"){
 library(ggplot2)
@@ -117,7 +145,7 @@ ggplot() +
                   group=interaction(P, cov),
                 fill=interaction(P, cov))) +
   geom_line(data=data, linewidth=0.9, color="black", 
-            aes(x=t, y = va.term1+va.term2,
+            aes(x=t, y = exp1+exp2,
                 linetype = "exp",
                 group=interaction(P, cov)
                                      )) + 
@@ -127,7 +155,7 @@ ggplot() +
                 group=interaction(P, cov),
                 color=interaction(P, cov))) +
 
-   ylim(c(0.93, 1.01))+
+   ylim(c(0.92, 1.03))+
   scale_linetype_manual("", 
                        breaks = c("obs",   "exp"),
                        values = c("solid",  "11"),
@@ -159,32 +187,36 @@ ggplot() +
           linetype = guide_legend(order = 1, reverse = T
                               ) )}
 HIb_wo=fig4B(data=df_HI_CI, 
-             yobs = df_HI_CI$vg_gcta.x.mean,
-             CIl = df_HI_CI$vg_gcta.x.CI95l,
-             CIr = df_HI_CI$vg_gcta.x.CI95r,
+             yobs = df_HI_CI$vg_standard.mean,
+             CIl = df_HI_CI$vg_standard_ganc.CI95l,
+             CIr = df_HI_CI$vg_standard.CI95r,
              legend.position = "none")
+print(HIb_wo)
 
 CGFb_wo=fig4B(data=df_CGF_CI, 
-             yobs = df_CGF_CI$vg_gcta.x.mean,
-             CIl = df_CGF_CI$vg_gcta.x.CI95l,
-             CIr = df_CGF_CI$vg_gcta.x.CI95r,
+             yobs = df_CGF_CI$vg_standard.mean,
+             CIl = df_CGF_CI$vg_standard.CI95l,
+             CIr = df_CGF_CI$vg_standard.CI95r,
              legend.position = "right")
+print(CGFb_wo)
 
 HIb_wganc=fig4B(data=df_HI_CI, 
-             yobs = df_HI_CI$vg_gcta_wganc.x.mean,
-             CIl = df_HI_CI$vg_gcta_wganc.x.CI95l,
-             CIr = df_HI_CI$vg_gcta_wganc.x.CI95r,
+             yobs = df_HI_CI$vg_standard_ganc.mean,
+             CIl = df_HI_CI$vg_standard_ganc.CI95l,
+             CIr = df_HI_CI$vg_standard_ganc.CI95r,
              legend.position = "none")
+print(HIb_wganc)
 
 CGFb_wganc=fig4B(data=df_CGF_CI, 
-             yobs = df_CGF_CI$vg_gcta_wganc.x.mean,
-             CIl = df_CGF_CI$vg_gcta_wganc.x.CI95l,
-             CIr = df_CGF_CI$vg_gcta_wganc.x.CI95r,
+             yobs = df_CGF_CI$vg_standard_ganc.mean,
+             CIl = df_CGF_CI$vg_standard_ganc.CI95l,
+             CIr = df_CGF_CI$vg_standard_ganc.CI95r,
              legend.position = "right")
+print(CGFb_wganc)
 
 
 fig4C=function(data, yobs, CIl, CIr, 
-               legend.position="right", y0.9=1.05){
+               legend.position="right", y0.9=1.1){
   library(ggplot2)
   ggplot() +
     geom_ribbon(data=data, alpha=0.2, linetype = 0,
@@ -193,7 +225,7 @@ fig4C=function(data, yobs, CIl, CIr,
                   group=interaction(P, cov),
                 fill=interaction(P, cov))) +
      geom_line(data=data, linewidth=0.9, color="black", 
-            aes(x=t, y = va.term1+va.term2+va.term3, 
+            aes(x=t, y = exp1+exp2+exp3, 
                 linetype = "exp",
                 group=interaction(P, cov)#,
                 #color=interaction(P, cov)
@@ -205,8 +237,8 @@ fig4C=function(data, yobs, CIl, CIr,
                 color=interaction(P, cov))) +
  
     annotate(geom = "text", x=16, y=y0.9, label="P=0.9") +
-    annotate(geom = "text", x=16, y=0.985, label="P=0") +
-    ylim(c(0.93, 1.08))+
+    annotate(geom = "text", x=16, y=0.97, label="P=0") +
+    ylim(c(0.93, 1.2))+
   scale_linetype_manual("", 
                        breaks = c("obs",   "exp"),
                        values = c("solid",  "11"),
@@ -241,30 +273,34 @@ fig4C=function(data, yobs, CIl, CIr,
 
 
 HIc_wo=fig4C(data=df_HI_CI, 
-          yobs = df_HI_CI$vg_GRMvarX.x.mean,
-          CIl = df_HI_CI$vg_GRMvarX.x.CI95l,
-          CIr = df_HI_CI$vg_GRMvarX.x.CI95r,
+          yobs = df_HI_CI$vg_varX.mean,
+          CIl = df_HI_CI$vg_varX.CI95l,
+          CIr = df_HI_CI$vg_varX.CI95r,
           legend.position = "none")
+print(HIc_wo)
 
 CGFc_wo=fig4C(data=df_CGF_CI, 
-          yobs = df_CGF_CI$vg_GRMvarX.x.mean,
-          CIl = df_CGF_CI$vg_GRMvarX.x.CI95l,
-          CIr = df_CGF_CI$vg_GRMvarX.x.CI95r,
-          y0.9 = 1.06,
+          yobs = df_CGF_CI$vg_varX.mean,
+          CIl = df_CGF_CI$vg_varX.CI95l,
+          CIr = df_CGF_CI$vg_varX.CI95r,
+          y0.9 = 1.1,
           legend.position = "right")
+print(CGFc_wo)
 
 HIc_wganc=fig4C(data=df_HI_CI, 
-          yobs = df_HI_CI$vg_GRMvarX_ganc.x.mean,
-          CIl = df_HI_CI$vg_GRMvarX_ganc.x.CI95l,
-          CIr = df_HI_CI$vg_GRMvarX_ganc.x.CI95r,
+          yobs = df_HI_CI$vg_varX_ganc.mean,
+          CIl = df_HI_CI$vg_varX_ganc.CI95l,
+          CIr = df_HI_CI$vg_varX_ganc.CI95r,
           legend.position = "none")
+print(HIc_wganc)
 
 CGFc_wganc=fig4C(data=df_CGF_CI, 
-          yobs = df_CGF_CI$vg_GRMvarX_ganc.x.mean,
-          CIl = df_CGF_CI$vg_GRMvarX_ganc.x.CI95l,
-          CIr = df_CGF_CI$vg_GRMvarX_ganc.x.CI95r,
-          y0.9 = 1.06,
+          yobs = df_CGF_CI$vg_varX_ganc.mean,
+          CIl = df_CGF_CI$vg_varX_ganc.CI95l,
+          CIr = df_CGF_CI$vg_varX_ganc.CI95r,
+          y0.9 = 1.1,
           legend.position = "right")
+print(CGFc_wganc)
 
 
 # LD matrix scaled results panel D
@@ -324,23 +360,25 @@ fig4D=function(data, yobs, CIl, CIr, yexp, ylab, legend.position="right"){
 
 
 HId_wo=fig4D(data=df_HI_CI, 
-          yobs = df_HI_CI$vg_GRMld.x.mean, 
-          yexp = df_HI_CI$exp.vg,
-          CIl = df_HI_CI$vg_GRMld.x.CI95l,
-          CIr = df_HI_CI$vg_GRMld.x.CI95r,
+          yobs = df_HI_CI$vg_ld.mean, 
+          yexp = df_HI_CI$exp.total,
+          CIl = df_HI_CI$vg_ld.CI95l,
+          CIr = df_HI_CI$vg_ld.CI95r,
           ylab = expression(hat(sigma)[u]^2),
-          legend.position = "none") 
+          legend.position = "none")
+print(HId_wo)
 
 CGFd_wo=fig4D(data=df_CGF_CI, 
-          yobs = df_CGF_CI$vg_GRMld.x.mean, 
-          yexp = df_CGF_CI$exp.vg,
-          CIl = df_CGF_CI$vg_GRMld.x.CI95l,
-          CIr = df_CGF_CI$vg_GRMld.x.CI95r,
+          yobs = df_CGF_CI$vg_ld.mean, 
+          yexp = df_CGF_CI$exp.total,
+          CIl = df_CGF_CI$vg_ld.CI95l,
+          CIr = df_CGF_CI$vg_ld.CI95r,
           ylab = expression(hat(sigma)[u]^2),
           legend.position = "right") 
+print(CGFd_wo)
 
 
-fig4D_w=function(data, yobs, CIl, CIr, ylab, legend.position="right", y0.9=0.93){
+fig4D_w=function(data, yobs, CIl, CIr, ylab, legend.position="right", y0.9=0.91){
   library(ggplot2)
   ggplot() +
   geom_ribbon(data=data, alpha=0.2, linetype = 0,
@@ -349,7 +387,7 @@ fig4D_w=function(data, yobs, CIl, CIr, ylab, legend.position="right", y0.9=0.93)
                 group=interaction(P, cov),
               fill=interaction(P, cov))) +
   geom_line(data=data, linewidth=0.9, color="black", 
-            aes(x=t, y = va.term1+va.term2-va.term3, 
+            aes(x=t, y = exp1+exp2-exp3, 
                 linetype = "exp",
                 group=interaction(P, cov))) +
   geom_line(data=data, linewidth=0.9, alpha = 0.65, #transparent this line
@@ -358,8 +396,8 @@ fig4D_w=function(data, yobs, CIl, CIr, ylab, legend.position="right", y0.9=0.93)
                 group=interaction(P, cov), 
                 color=interaction(P, cov))) +
     annotate(geom = "text", x=16, y=y0.9, label="P=0.9") +
-    annotate(geom = "text", x=16, y=1.03, label="P=0") +
-  scale_y_log10(limits=c(0.9, 1.1)) +
+    annotate(geom = "text", x=16, y=1.06, label="P=0") +
+  scale_y_log10(limits=c(0.89, 1.1)) +
   scale_linetype_manual("", 
                        breaks = c("obs",   "exp"),
                        values = c("solid",  "11"),
@@ -393,18 +431,20 @@ fig4D_w=function(data, yobs, CIl, CIr, ylab, legend.position="right", y0.9=0.93)
          )
 }
 HId_wganc=fig4D_w(data=df_HI_CI, 
-          yobs = df_HI_CI$vg_GRMld_ganc.x.mean, 
-          CIl = df_HI_CI$vg_GRMld_ganc.x.CI95l,
-          CIr = df_HI_CI$vg_GRMld_ganc.x.CI95r,
+          yobs = df_HI_CI$vg_ld_ganc.mean, 
+          CIl = df_HI_CI$vg_ld_ganc.CI95l,
+          CIr = df_HI_CI$vg_ld_ganc.CI95r,
           ylab = expression(hat(sigma)[u]^2),
-          legend.position = "none", y0.9=0.95) 
+          legend.position = "none", y0.9=0.93) 
+print(HId_wganc)
 
 CGFd_wganc=fig4D_w(data=df_CGF_CI, 
-          yobs = df_CGF_CI$vg_GRMld_ganc.x.mean, 
-          CIl = df_CGF_CI$vg_GRMld_ganc.x.CI95l,
-          CIr = df_CGF_CI$vg_GRMld_ganc.x.CI95r,
+          yobs = df_CGF_CI$vg_ld_ganc.mean, 
+          CIl = df_CGF_CI$vg_ld_ganc.CI95l,
+          CIr = df_CGF_CI$vg_ld_ganc.CI95r,
           ylab = expression(hat(sigma)[u]^2),
-          legend.position = "right") 
+          legend.position = "right")
+print(CGFd_wganc)
 
 
 
@@ -413,12 +453,12 @@ fig4color=function(data){
   library(ggplot2)
 ggplot() +
   geom_line(data=data, linewidth=0.9, alpha = 0.65, #transparent this line
-            aes(x=t, y = vg_gcta.x.mean,                               
+            aes(x=t, y = vg_standard.mean,                               
                 linetype = "obs",
                 group=interaction(P, cov), 
                 color=interaction(P, cov))) +
   geom_line(data=data, linewidth=0.9, 
-            aes(x=t, y = exp.vg, 
+            aes(x=t, y = exp.total, 
                 linetype = "exp",
                 group=interaction(P, cov),
                 color=interaction(P, cov))) +
@@ -477,5 +517,5 @@ plt=ggarrange(plt_wo, '', plt_wganc,
                           heights = unit(c(9, 0.8), "in")
                           ) 
 
-ggsave("../figs/GREML_vg_wowganc_CI.png", plot=plt,
+ggsave("greml_vg_wowganc_CI.png", plot=plt,
        width = 16, height = 10, dpi = 300, units = "in", device='png')
