@@ -88,6 +88,8 @@
   sbatch obs_terms_lanc.sh ${model} ${theta} ${gen} ${P} ${cov}
   ```
 * Output: Observed outputs for each global and local ancestry:
+  | Colomn | Description  
+  | :---: | :---  |
   | _var.prs.geno_ | Genetic variance due to genotype ($V_g$) |
   | _var.prs.lanc_ | Genetic variance due to local ancestry ($V_{\gamma}$) |
 
