@@ -25,9 +25,9 @@ for seed in {1..10}; do
     filename=admix_${model}_theta${theta}_gen${gen}_P${P}_${cov}_seed${seed}_t${t}_lanc
     
     #get bed, bim, fam files to get sscore
-    # ./plink2 --import-dosage ${plinkdir}/${filename}.dosage format=1 single-chr=1 noheader \
-    # --fam ${plinkdir}/${filename}.tfam \
-    # --make-bed --out ${plinkdir}/${filename}
+    ./plink2 --import-dosage ${plinkdir}/${filename}.dosage format=1 single-chr=1 noheader \
+    --fam ${plinkdir}/${filename}.tfam \
+    --make-bed --out ${plinkdir}/${filename}
     
     #get sscore files
     if [ "$cov" == "neg" ]; then
