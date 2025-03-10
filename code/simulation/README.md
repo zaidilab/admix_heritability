@@ -106,7 +106,7 @@
   | _vg.term4_ | (1.4) of $V_g$: genetic variance come from LD |
   | _vg.sum_ | Expected $V_g$: (1.1)+(1.2)+(1.3)+(1.4) |
   | _theta_ | Proportion of total admixture proportion ${\theta}$|
-  | _gen_ | Generations estimated ${\gen}$|
+  | _gen_ | Generations estimated $gen$|
   | _var.prs.geno_ | Genetic variance due to genotype ($V_g$) |
   | _var.prs.lanc_ | Genetic variance due to local ancestry ($V_{\gamma}$) |
   | _exp.theta_ | Mean of ancestry in the admixed population ($E_{\theta}$)|
