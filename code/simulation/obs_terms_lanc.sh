@@ -18,7 +18,6 @@ cov=${5} #pos or neg
 # t=${7}
 
 plinkdir=/home/aazaidi/klema030/AdjustedHE/output/plink_lanc/theta${theta}_gen${gen}/${model}
-# phenodir=/home/aazaidi/klema030/AdjustedHE/output/new_pheno_lanc/theta${theta}_gen${gen}/${model}
 outdir=/users/6/klema030/AdjustedHE/output/ganc/obs_lanc
 
 for seed in {1..10}; do
