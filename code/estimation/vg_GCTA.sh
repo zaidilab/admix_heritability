@@ -48,7 +48,7 @@ Rscript /users/6/klema030/AdjustedHE/GRMvarX.R \
    ${filename} \
    ${grm_varX}
 
-###estimate vgamma without ancestry
+###estimate vg without ancestry
 #standard
 ./gcta64 --reml \
 --grm ${grm_standard}/${filename} \
@@ -76,7 +76,7 @@ Rscript /users/6/klema030/AdjustedHE/GRMvarX.R \
 --mpheno 2 \
 --reml-no-constrain
 
-###estimate Vgamma with ganc as covariate
+###estimate Vg with ganc as covariate
 #standard
 ./gcta64 --reml \
 --grm ${grm_standard}/${filename} \
