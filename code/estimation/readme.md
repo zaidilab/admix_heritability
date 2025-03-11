@@ -23,4 +23,4 @@
 ## Adding confidence intervals to the estimates
 * Script: **greml_CI.R**
 * Requirement: R 4.2.0
-* Output: a table with bootstrapped results and confidence intervals for each variable (${V_g}$, ${h^2}$, and ${V_gamma}$).
+* Output: a table with bootstrapped results and confidence intervals for each variable (${V_g}$, ${h^2}$, and ${V_{gamma}}$).
