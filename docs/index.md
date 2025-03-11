@@ -6,8 +6,8 @@ This repository contains codes used to carry out the analyses and create the mai
 * Requirement: R version 4.2.3
 * Usage: ```Rscript sim_admix.R -F ${FST} -l ${nloci} -n ${nindv} -M ${model} --theta ${theta} -t ${gen} -P ${P} -C ${cov} --seed ${seed} ```
 * Example: To simulate a trait under divergent selection with Fst 0.2 between source populations, causal loci 1e3, with 1e4 effective population size, under hybrid isolation (HI) model, with 50% admixture proportion at t=0, with assortative mating strength P=0.9 and track for 20 generations for a replicate under seed 1: ```Rscript sim_admix.R -F 0.2 -l 1e3 -n 1e4 -p 0 -M HI --theta 0.5 -t 20 -P 0.9 -C pos --seed 1 ```
-* Output: A table records the essential summary statistics of the simulated admixed population for each generation, such as mean and variance of ancestry, genetic variance, etc.
-* Output (optional, required files for GREML estimation): output genotype/local ancestry, PRS, phenotype to PLINK acceptable format: .dosage, .fam, .pheno, .ganc (global ancestry as a covariate).
+* Output: output genotype/local ancestry to PLINK acceptable format: .dosage, .fam, .ganc (global ancestry as a covariate).
+* Output (optional): A table records the essential summary statistics of the simulated admixed population for each generation, such as mean and variance of ancestry, genetic variance, etc.
 
 ## Estimating ${V}_g$ with GREML 
 * Script: **vg_GCTA.sh**
@@ -19,7 +19,7 @@ This repository contains codes used to carry out the analyses and create the mai
 ## Estimating ${V}_g$ with HE regression 
 * Script: **AdjHE_residual_noa.slurm, AdjHE_residual.slurm, gcta_HE.slurm, run_gcta_GRMld.slurm, run_gcta_GRMvarX.slurm**
 * Requirement: R version 4.2.3, PLINK 2.0, and GCTA version 1.94.1
-* Usage: see README.md in [**HE_simulation**](https://github.com/jinguohuang/admix_heritability/tree/master/code/HE_simulation)
+* Usage: see README.md in [**HE_simulation**](https://github.com/zaidilab/admix_heritability/tree/master/code/HE_simulation)
 * Example: To estimate the genetic variance of the complex trait in the admixed population at generation 10 simulated above using HE regression without ancestry as a covariate implemented in R: ```sbatch AdjHE_residual_noa.slurm HI 0 pos 1 0```
 * Output: .txt file of estimation results with global ancestry as covariate.
 
