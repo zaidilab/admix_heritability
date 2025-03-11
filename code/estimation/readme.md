@@ -13,7 +13,7 @@
 * Usage: ```Rscript GRMld.R ${filename} ${plinkdir} ${grmdir}```
 * Example: To feed GCTA with GRM with updated scaling: LD matrix, instead of the standard scaling of GREML 2f(1-f), substitute this line with command to construct grm with gcta in **vg_GCTA.sh**
 
-## Estimating ${V}_gamma$ with GREML 
+## Estimating ${V}_{gamma}$ with GREML 
 * Script: **vg_GCTA_lanc.sh**
 * Requirement: PLINK 2.0, and GCTA version 1.94.1
 * Usage: ```./vg_GCTA_lanc.sh ${model} ${theta} ${gen} ${P} ${cov} ${seed} ${t}```
