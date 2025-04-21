@@ -27,5 +27,5 @@ Scripts for methods described in "Interpreting SNP heritability in admixed popul
 - [LDSC](https://github.com/immunogenomics/cov-ldsc)
 
 ## References
-Jinguo Huang, Nicole Kleman, Saonli Basu, Mark Shriver, Arslan Zaidi. (2024) "Interpreting SNP heritability in admixed populations". bioRxiv. doi: https://doi.org/10.1101/2023.08.04.551959
+Jinguo Huang, Nicole Kleman, Saonli Basu, Mark Shriver, Arslan Zaidi. (2025) "Interpreting SNP heritability in admixed populations". bioRxiv. doi: https://doi.org/10.1101/2023.08.04.551959
 
