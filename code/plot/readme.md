@@ -1,6 +1,6 @@
 ## Plotting scripts for manuscript
 
-* Fig2: ${\theta}$: ```Rscript plot_theta.R ```
+* Fig1: ${\theta}$: ```Rscript plot_theta.R ```
 
 * Fig3: ${V}_g$: ```Rscript plot_vg.R```
 
