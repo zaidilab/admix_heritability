@@ -24,10 +24,10 @@ integer_breaks <- function(n = 5, ...) {
 
 # plot HE manual script estimate and expected 
 fig4Awo=function(data, yobs, yexp, ylab, 
-               CIl, CIr,
+               CIl, CIr, title, model,
                legend.position="right"){
   library(ggplot2)
-  ggplot() +
+  p <- ggplot() +
     geom_ribbon(data=data, alpha=0.2, linetype = 0, #remove the boarder
               aes(x=t, 
                   ymin = CIl, ymax = CIr,
@@ -69,7 +69,8 @@ fig4Awo=function(data, yobs, yexp, ylab,
                                  ) +
   theme_classic() +
   xlab("t") +
-  ylab(ylab)  + 
+  ylab(ylab) +
+  ggtitle(title) +
   theme(aspect.ratio = 1, 
         plot.title = element_text(hjust = 0.5), # to center the title
         legend.position = legend.position, 
@@ -80,6 +81,13 @@ fig4Awo=function(data, yobs, yexp, ylab,
   guides(color = "none", fill = "none",# no show color legend
           linetype = guide_legend(order = 2, reverse = T)
          )
+  # remove y-axis labels if model == "CGF"
+  if (model == "CGF") {
+    p <- p + theme(axis.title.y = element_blank(),
+                   axis.text.y = element_blank(),
+                   axis.ticks.y = element_blank())
+  }
+  return(p)
 }
 
 
@@ -90,6 +98,7 @@ HIa_wo=fig4Awo(data=df_HI_CI,
           ylab = expression(hat(sigma)[u]^2),
           CIl = df_HI_CI$vg_standard.CI95l,
           CIr = df_HI_CI$vg_standard.CI95r,
+          title = "HI", model = "HI",
           legend.position = "none") 
 
 print(HIa_wo)
@@ -100,15 +109,16 @@ CGFa_wo=fig4Awo(data=df_CGF_CI,
           ylab = expression(hat(sigma)[u]^2),
           CIl = df_CGF_CI$vg_standard.CI95l,
           CIr = df_CGF_CI$vg_standard.CI95r,
+          title = "CGF", model = "CGF",
           legend.position = "right") 
 print(CGFa_wo)
 
 #fig 4A with ganc
 fig4Awganc=function(data, yobs, yexp, ylab, 
-                 CIl, CIr, #y0.9 = 0.3, y0 = 0.87,
+                 CIl, CIr, title, model, #y0.9 = 0.3, y0 = 0.87,
                  legend.position="right"){
   library(ggplot2)
-  ggplot() +
+  p <- ggplot() +
     geom_ribbon(data=data, alpha=0.2, linetype = 0, #remove the boarder
                 aes(x=t, 
                     ymin = CIl, ymax = CIr,
@@ -152,7 +162,8 @@ fig4Awganc=function(data, yobs, yexp, ylab,
                       )) +
     theme_classic() +
     xlab("t") +
-    ylab(ylab)  + 
+    ylab(ylab) +
+    ggtitle(title) +
     theme(aspect.ratio = 1, 
           plot.title = element_text(hjust = 0.5), # to center the title
           legend.position = legend.position, 
@@ -163,6 +174,13 @@ fig4Awganc=function(data, yobs, yexp, ylab,
     guides(color = "none", fill = "none",# no show color legend
            linetype = guide_legend(order = 2, reverse = T)
     )
+  # remove y-axis labels if model == "CGF"
+  if (model == "CGF") {
+    p <- p + theme(axis.title.y = element_blank(),
+                   axis.text.y = element_blank(),
+                   axis.ticks.y = element_blank())
+  }
+  return(p)
 }
 
 
@@ -172,6 +190,7 @@ HIa_wganc=fig4Awganc(data=df_HI_CI,
           ylab = expression(hat(sigma)[u]^2),
           CIl = df_HI_CI$vg_standard_ganc.CI95l,
           CIr = df_HI_CI$vg_standard_ganc.CI95r,
+          title = "HI", model = "HI",
           legend.position = "none") 
 print(HIa_wganc)
  
@@ -181,15 +200,16 @@ CGFa_wganc=fig4Awganc(data=df_CGF_CI,
           ylab = expression(hat(sigma)[u]^2),
           CIl = df_CGF_CI$vg_standard_ganc.CI95l,
           CIr = df_CGF_CI$vg_standard_ganc.CI95r,
+          title = "CGF", model = "CGF",
           #y0.9 = 0.2, y0 = 0.65,
           legend.position = "right") 
 print(CGFa_wganc)
 
 
-fig4Bwo=function(data, yobs, CIl, CIr, 
+fig4Bwo=function(data, yobs, CIl, CIr, model,
                legend.position="right", y0.9=5){
   library(ggplot2)
-  ggplot() +
+  p <- ggplot() +
     geom_ribbon(data=data, alpha=0.2, linetype = 0,
               aes(x=t, 
                   ymin = CIl, ymax = CIr,
@@ -243,6 +263,13 @@ fig4Bwo=function(data, yobs, CIl, CIr,
         ) + 
   guides(color = "none", fill = "none", # no show color legend
           linetype = guide_legend(order = 2, reverse = T))
+  # remove y-axis labels if model == "CGF"
+  if (model == "CGF") {
+    p <- p + theme(axis.title.y = element_blank(),
+                   axis.text.y = element_blank(),
+                   axis.ticks.y = element_blank())
+  }
+  return(p)
 }
 
 
@@ -250,7 +277,8 @@ HIb_wo=fig4Bwo(data=df_HI_CI,
           yobs = df_HI_CI$vg_VarX.mean,
           CIl = df_HI_CI$vg_VarX.CI95l,
           CIr = df_HI_CI$vg_VarX.CI95r,
-          legend.position = "none")
+          legend.position = "none",
+          model = "HI")
 print(HIb_wo)
 
 CGFb_wo=fig4Bwo(data=df_CGF_CI, 
@@ -258,14 +286,15 @@ CGFb_wo=fig4Bwo(data=df_CGF_CI,
           CIl = df_CGF_CI$vg_VarX.CI95l,
           CIr = df_CGF_CI$vg_VarX.CI95r,
           # y0.9 = 6,
-          legend.position = "right")
+          legend.position = "right",
+          model = "CGF")
 print(CGFb_wo)
 
 
-fig4Bwganc=function(data, yobs, CIl, CIr, 
+fig4Bwganc=function(data, yobs, CIl, CIr, model,
                  legend.position="right", y0.9=1.12, y0 = 0.93){
   library(ggplot2)
-  ggplot() +
+  p <- ggplot() +
     geom_ribbon(data=data, alpha=0.2, linetype = 0,
                 aes(x=t, 
                     ymin = CIl, ymax = CIr,
@@ -318,6 +347,13 @@ fig4Bwganc=function(data, yobs, CIl, CIr,
     guides(color = "none", fill = "none", # no show color legend
            linetype = guide_legend(order = 2, reverse = T
            ) )
+  # remove y-axis labels if model == "CGF"
+  if (model == "CGF") {
+    p <- p + theme(axis.title.y = element_blank(),
+                   axis.text.y = element_blank(),
+                   axis.ticks.y = element_blank())
+  }
+  return(p)
 }
 
 
@@ -325,7 +361,8 @@ HIb_wganc=fig4Bwganc(data=df_HI_CI,
           yobs = df_HI_CI$vg_Varx_ganc.mean,
           CIl = df_HI_CI$vg_Varx_ganc.CI95l,
           CIr = df_HI_CI$vg_Varx_ganc.CI95r,
-          legend.position = "none")
+          legend.position = "none",
+          model = "HI")
 print(HIb_wganc)
 
 CGFb_wganc=fig4Bwganc(data=df_CGF_CI, 
@@ -333,14 +370,15 @@ CGFb_wganc=fig4Bwganc(data=df_CGF_CI,
           CIl = df_CGF_CI$vg_Varx_ganc.CI95l,
           CIr = df_CGF_CI$vg_Varx_ganc.CI95r,
           y0.9 = 1.14, y0 = 0.92,
-          legend.position = "right")
+          legend.position = "right",
+          model = "CGF")
 print(CGFb_wganc)
 
 
 # LD matrix scaled results panel C
-fig4C=function(data, yobs, CIl, CIr, yexp, ylab, legend.position="right"){
+fig4C=function(data, yobs, CIl, CIr, yexp, ylab, legend.position="right", model){
   library(ggplot2)
-  ggplot() +
+  p <- ggplot() +
   geom_ribbon(data=data, alpha=0.2, linetype = 0,
             aes(x=t, 
                 ymin = CIl, ymax = CIr,
@@ -389,6 +427,13 @@ fig4C=function(data, yobs, CIl, CIr, yexp, ylab, legend.position="right"){
   guides(color = "none", fill = "none",# no show color legend
           linetype = guide_legend(order = 2, reverse = T) 
          )
+  # remove y-axis labels if model == "CGF"
+  if (model == "CGF") {
+    p <- p + theme(axis.title.y = element_blank(),
+                   axis.text.y = element_blank(),
+                   axis.ticks.y = element_blank())
+  }
+  return(p)
 }
 
 
@@ -399,7 +444,8 @@ HIc_wo=fig4C(data=df_HI_CI,
           CIl = df_HI_CI$vg_LD.CI95l,
           CIr = df_HI_CI$vg_LD.CI95r,
           ylab = expression(hat(sigma)[u]^2),
-          legend.position = "none")
+          legend.position = "none",
+          model = "HI")
 print(HIc_wo)
 
 CGFc_wo=fig4C(data=df_CGF_CI, 
@@ -408,13 +454,14 @@ CGFc_wo=fig4C(data=df_CGF_CI,
           CIl = df_CGF_CI$vg_LD.CI95l,
           CIr = df_CGF_CI$vg_LD.CI95r,
           ylab = expression(hat(sigma)[u]^2),
-          legend.position = "right")
+          legend.position = "right",
+          model = "CGF")
 print(CGFc_wo)
 
 
-fig4C_w=function(data, yobs, CIl, CIr, ylab, legend.position="right", y0.9=0.88){
+fig4C_w=function(data, yobs, CIl, CIr, ylab, legend.position="right", y0.9=0.88, model){
   library(ggplot2)
-  ggplot() +
+  p <- ggplot() +
   geom_ribbon(data=data, alpha=0.2, linetype = 0,
             aes(x=t, 
                 ymin = CIl, ymax = CIr,
@@ -463,6 +510,13 @@ fig4C_w=function(data, yobs, CIl, CIr, ylab, legend.position="right", y0.9=0.88)
   guides(color = "none", fill = "none",# no show color legend
           linetype = guide_legend(order = 2, reverse = T)#, 
          )
+  # remove y-axis labels if model == "CGF"
+  if (model == "CGF") {
+    p <- p + theme(axis.title.y = element_blank(),
+                   axis.text.y = element_blank(),
+                   axis.ticks.y = element_blank())
+  }
+  return(p)
 }
 
 HIc_wganc=fig4C_w(data=df_HI_CI, 
@@ -470,7 +524,8 @@ HIc_wganc=fig4C_w(data=df_HI_CI,
           CIl = df_HI_CI$vg_LD_ganc.CI95l,
           CIr = df_HI_CI$vg_LD_ganc.CI95r,
           ylab = expression(hat(sigma)[u]^2),
-          legend.position = "none", y0.9=0.9) 
+          legend.position = "none", y0.9=0.9,
+          model = "HI") 
 print(HIc_wganc)
 
 CGFc_wganc=fig4C_w(data=df_CGF_CI, 
@@ -478,7 +533,8 @@ CGFc_wganc=fig4C_w(data=df_CGF_CI,
           CIl = df_CGF_CI$vg_LD_ganc.CI95l,
           CIr = df_CGF_CI$vg_LD_ganc.CI95r,
           ylab = expression(hat(sigma)[u]^2),
-          legend.position = "right") 
+          legend.position = "right",
+          model = "CGF") 
 print(CGFc_wganc)
 
 
@@ -534,23 +590,40 @@ plt_wo=ggarrange(plotlist = list(HIa_wo, CGFa_wo,
                  HIc_wo, CGFc_wo),
                  ncol = 2, nrow = 3, 
                  labels = c("A", "", "B", "","C", ""),
-                 align = c("h"))
+                 hjust = -0.6,
+                 label.x = 0.1,
+                 label.y = 1,
+                 align = c("h")) %>%
+  ggpubr::annotate_figure(plt_wo, 
+                          top = text_grob("No correction\n", size = 22))
 
 plt_wganc=ggarrange(plotlist = list(HIa_wganc, CGFa_wganc, 
                     HIb_wganc, CGFb_wganc, 
                     HIc_wganc, CGFc_wganc),
                     ncol = 2, nrow = 3, 
                     labels = c("D", "", "E", "","F", ""),
-                    align = c("h"))
+                    label.x = 0.1,
+                    label.y = 1,
+                    hjust = -0.6,
+                    align = c("h")) %>% 
+  ggpubr::annotate_figure(plt_wganc, 
+                          top = text_grob("Ancestry correction\n", size = 22))
 
 # add space between these two
-plt=ggarrange(plotlist = list(plt_wo, '', plt_wganc), 
+plt=ggarrange(plotlist = list(plt_wo, NULL, plt_wganc), 
               ncol = 3, nrow = 1, 
-              widths = c(8,1,8),
+              widths = c(1,0,1),
               align = c("v")) %>% # to move the legend closer 
-  gridExtra::grid.arrange(get_legend(HI_color), 
-                          heights = unit(c(9, 0.8), "in")
-  ) 
+  gridExtra::grid.arrange(ggpubr::get_legend(HI_color), 
+                          heights = unit(c(8.2, 0.8), "in"))
 
-ggsave("HE_mm_vg_wowganc_CI.png", plot=plt,
-       width = 20, height = 10, dpi = 300, units = "in", device='png')
+#add to legend
+annotated_plot <- cowplot::ggdraw(plt) +
+  cowplot::draw_text("Divergent", x = 0.445, y = 0.08, hjust = 1, size = 10) +
+  cowplot::draw_text("Stabilizing", x = 0.445, y = 0.045, hjust = 1, size = 10) 
+
+annotated_plot
+
+#save
+ggsave("Figure5_HE.pdf", plot=annotated_plot,
+       width = 12.5, height = 9, dpi = 300, units = "in", device='pdf')
