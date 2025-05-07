@@ -8,6 +8,8 @@
 
 * Fig5: $\hat{V}_g^{HE}$: ```Rscript plot_HE_vg_CI.R```
 
+* Fig6: $\hat{V}_g^{LDSC}$: ```Rscript plt_ldsc_results.R```
+
 * Fig7: $\hat{V}_{\gamma}$: ```Rscript plot_GREML_vgamma.R```
 
 * Fig8: Decomposing variance explained: ```Rscript plot_vgCI.R```
