@@ -231,7 +231,7 @@ plt.gc = ggplot()+
 
 
 #make a single plot with estimated vg and gc
-plt_all = plt.vg + plt.gc + plot_annotation(tag_levels = 'A')
+plt_all = plt.vg + plt.gc + plot_annotation(tag_levels = 'a') & theme(plot.tag = element_text(size = 14, face = "bold", hjust=0, vjust=0))
 
 
 
