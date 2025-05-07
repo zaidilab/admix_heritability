@@ -51,18 +51,19 @@ p = ggplot() +
         text = element_text(size = 10)) 
 
 # New facet label names
-theta.labs <- c("\u03B8 = 0.1", "\u03B8 = 0.2", "\u03B8 = 0.5")
-names(theta.labs) <- c("0.1", "0.2", "0.5")
+# theta.labs <- c("\u03B8 = 0.1", "\u03B8 = 0.2", "\u03B8 = 0.5")
+# names(theta.labs) <- c("0.1", "0.2", "0.5")
 
-gen.labs <- c("10 generations", "20 generations","50 generations","100 generations")
-names(gen.labs) <- c("10", "20", "50", "100")
+# gen.labs <- c("10 generations", "20 generations","50 generations","100 generations")
+# names(gen.labs) <- c("10", "20", "50", "100")
 
 vgCGF = p + facet_grid(rows = vars(theta), cols = vars(gen), #row as theta col as gen
              scale="free_x",  #adjust the xlim for each
-  labeller = labeller(theta = theta.labs, gen = gen.labs)) + 
+  labeller = label_bquote(rows = theta ~ "=" ~ .(theta), cols = .(gen) ~ "generations")) + 
   theme(
     strip.background = element_rect(
       color="black", fill="white", size=0.8, linetype="solid"),
+    strip.text = element_text(face = "bold"),
     strip.text.x = element_text(
         size = 6, color = "black", face = "bold"),
     strip.text.y = element_text(
@@ -93,12 +94,25 @@ vgCGF=plot_vg(data=df_CGF,
          ylab=expression(V[g]), 
          title="Continuous Gene Flow")
 
-library(ggpubr)
-plt=ggarrange(vgHI, vgCGF, ncol = 2, nrow = 1, 
-          labels = c("A", "B"),
-          align = c("hv"),
-          legend = "none") %>% # to move the legend closer 
-  gridExtra::grid.arrange(get_legend(vgHI), heights = unit(c(100, 5), "mm"))
 
-ggsave("Fig3_vg.png", plot=plt,
-       width = 8, height = 5, dpi = 300, units = "in", device='png')
+library(ggpubr)
+#combine plots
+plt=ggarrange(vgHI, vgCGF, ncol = 2, nrow = 1, 
+              labels = c("a", "b"),
+              align = c("hv"),
+              label.x = 0.1,
+              label.y = 1,
+              legend = "none") %>% # to move the legend closer 
+  gridExtra::grid.arrange(ggpubr::get_legend(vgHI), heights = unit(c(100, 5), "mm"))
+
+#add to legend
+annotated_plot <- cowplot::ggdraw(plt) +
+  cowplot::draw_text("Divergent", x = 0.2, y = 0.14, hjust = 1, size = 10) +
+  cowplot::draw_text("Stabilizing", x = 0.2, y = 0.08, hjust = 1, size = 10)
+
+annotated_plot
+
+#save
+ggsave("Figure3_vg1.pdf", plot=annotated_plot,
+       width = 8, height = 5, dpi = 300, units = "in", device = "pdf")
+

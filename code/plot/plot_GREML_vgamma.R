@@ -499,7 +499,7 @@ print(CGFd_w)
 library(ggpubr)
 plt_wo=ggarrange(HIa, CGFa, HIb, CGFb, HIc, CGFc, HId, CGFd,
                  ncol = 2, nrow = 4, 
-                 labels = c("A", "", "B", "","C", "","D", ""),
+                 labels = c("a", "", "b", "","c", "","d", ""),
                  label.x = 0.1,
                  label.y = 0.98,
                  hjust = -0.5,
@@ -509,7 +509,7 @@ plt_wo=ggarrange(HIa, CGFa, HIb, CGFb, HIc, CGFc, HId, CGFd,
 
 plt_wganc=ggarrange(HIa_w, CGFa_w, HIb_w, CGFb_w, HIc_w, CGFc_w, HId_w, CGFd_w, 
               ncol = 2, nrow = 4, 
-              labels = c("E", "", "F", "","G", "","H", ""),
+              labels = c("e", "", "f", "","g", "","h", ""),
               label.x = 0.1,
               label.y = 0.98,
               hjust = -0.5,

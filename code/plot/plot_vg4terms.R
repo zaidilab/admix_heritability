@@ -298,14 +298,21 @@ plt2=annotate_figure(plt, top = textGrob("Continuous Gene Flow", vjust = 1, gp =
 plt=
   ggarrange(plt1, plt2,
             ncol = 2, nrow = 1, 
-           labels = c("A", "B"),
+           labels = c("a", "b"),
             align = "v",
             legend = "none") %>% # to move the legend closer 
-  gridExtra::grid.arrange(get_legend(vg1HI), 
+  gridExtra::grid.arrange(ggpubr::get_legend(vg1HI), 
                           heights = unit(c(5, 0.6), "in")
                           )
 
-ggsave("FigS1_vg4terms.png", plot=plt,
+#add to legend
+annotated_plot <- cowplot::ggdraw(plt) +
+  cowplot::draw_text("Divergent", x = 0.205, y = 0.11, hjust = 1, size = 9) +
+  cowplot::draw_text("Stabilizing", x = 0.205, y = 0.055, hjust = 1, size = 9)
+annotated_plot
+
+#save
+ggsave("FigureS1_vg4terms.pdf", plot=annotated_plot,
        width = 8, height = 6,
-       dpi = 300, units = "in", device='png')
+       dpi = 300, units = "in", device=pdf)
 

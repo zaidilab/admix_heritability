@@ -50,15 +50,15 @@ p = ggplot() +
         text = element_text(size = 10)) 
 
 # New facet label names
-theta.labs <- c("\u03B8 = 0.1", "\u03B8 = 0.2", "\u03B8 = 0.5")
-names(theta.labs) <- c("0.1", "0.2", "0.5")
-
-gen.labs <- c("10 generations", "20 generations","50 generations","100 generations")
-names(gen.labs) <- c("10", "20", "50", "100")
+# theta.labs <- c("\u03B8 = 0.1", "\u03B8 = 0.2", "\u03B8 = 0.5")
+# names(theta.labs) <- c("0.1", "0.2", "0.5")
+# 
+# gen.labs <- c("10 generations", "20 generations","50 generations","100 generations")
+# names(gen.labs) <- c("10", "20", "50", "100")
 
 vgCGF = p + facet_grid(rows = vars(theta), cols = vars(gen), #row as theta col as gen
              scale="free_x",  #adjust the xlim for each
-  labeller = labeller(theta = theta.labs, gen = gen.labs)) + 
+  labeller = label_bquote(rows = theta ~ "=" ~ .(theta), cols = .(gen) ~ "generations")) + 
   theme(
     strip.background = element_rect(
       color="black", fill="white", size=0.8, linetype="solid"),
@@ -93,12 +93,21 @@ vgammaCGF=plot_vgamma(data=df_CGF,
          title="Continuous Gene Flow")
 
 library(ggpubr)
+library(cowplot)
 plt=ggarrange(vgammaHI, vgammaCGF, ncol = 2, nrow = 1, 
-          labels = c("A", "B"),
+          labels = c("a", "b"),
           align = c("hv"),
           legend = "none") %>% # to move the legend closer 
-  gridExtra::grid.arrange(get_legend(vgammaHI), heights = unit(c(100, 5), "mm"))
+  gridExtra::grid.arrange(ggpubr::get_legend(vgammaHI), heights = unit(c(100, 5), "mm"))
 
-ggsave("FigS2_Vgamma.png", plot=plt,
-       width = 8, height = 5, dpi = 300, units = "in", device='png')
+#add to legend
+annotated_plot <- ggdraw(plt) +
+  draw_text("Divergent", x = 0.2, y = 0.14, hjust = 1, size = 9) +
+  draw_text("Stabilizing", x = 0.2, y = 0.08, hjust = 1, size = 9)
+
+annotated_plot
+
+#save
+ggsave("FigureS2_Vgamma.pdf", plot=annotated_plot,
+       width = 8, height = 5, dpi = 300, units = "in", device='pdf')
 
