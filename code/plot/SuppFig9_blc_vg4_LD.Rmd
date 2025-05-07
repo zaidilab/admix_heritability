@@ -1,0 +1,144 @@
+---
+title: "BloodCell_debug"
+author: "Jinguo Huang"
+date: "2023-05-20"
+output: html_document
+---
+
+# Sanity check for blood cell traits
+# Trans ancestry bloodcell vg sum are weirdly large for several traits and kinda suspicious: NEU, WBC, MCH, MON, BAS
+# figure out where those large vg came from
+# if it came from small number of loci, figure out who are they
+# if it came from a chr, figure out which chr, and plot the LD situation
+
+```{R}
+# large Vg4&Vg2: NEU, WBC, MCH, MON
+
+getTerm4=function(betafreq){
+f1=betafreq$MAF_EUR
+f2=betafreq$MAF_AFR 
+beta=betafreq$BETA
+SNP=betafreq$SNP
+vartheta=0.022
+exptheta=0.793
+nloci=nrow(betafreq)
+  nloci=nloci
+  term4=matrix(, nrow = nloci, ncol = nloci)
+  for (i in 1:nloci){
+    for (j in 1:nloci){
+      term4[i,j]=beta[i]*beta[j]*(f1[i]-f2[i])*(f1[j]-f2[j])
+    }
+  }
+# make diagnal 0
+  diag(term4)=0
+  #hist(term4)
+  #image(term4)
+mat=reshape2::melt(term4)
+return(mat)}
+
+
+plot_mat=function(mat, title=paste0(trait, " Chr", chrom)){
+  library(ggplot2)
+  p=ggplot(mat, aes(Var1, Var2, fill=value))+
+  geom_tile()+
+    theme_classic()+
+    scale_fill_gradient2(low = "blue", mid = "white", high = "red")+
+  labs(x = "SNP i", 
+       y = "SNP j", 
+       fill = expression(paste(beta[i], beta[j], (f[1][i]-f[2][i]), (f[1][j]-f[2][j]))),
+       title = title) 
+  return(p)
+} 
+
+#trait="NEU"
+#chrom=1
+#trait="WBC"
+#trait="MON"
+#trait="MCH"
+#chrom=16
+plot_chr_ld=function(trait, chrom){
+betafile=paste0(trait, "_allele_beta.txt")
+f1file=paste0("CEU_", trait, ".frq")
+f2file=paste0("YRI_", trait, ".frq")
+#pfile=paste0(trait, "_100kb.clumped")
+betai=read.table(betafile, header = T)
+#colClasses=c("character","character","numeric"))
+f1=read.table(f1file, header = T,comment.char = "" )
+f2=read.table(f2file, header = T,comment.char = "" )
+#p=read.table(pfile,header = T)
+# merge 2 freq files
+f1f2=merge(f1,f2, by=c("CHR", "SNP", "A1", "A2"), suffixes = c("_EUR", "_AFR"))
+# merge freq and beta
+betafreq=merge(f1f2, betai, by=c("SNP", "A1"))
+# remove DARC allele 1:159204893
+#betafreq=betafreq[!betafreq$SNP=="1:159204893",]
+#betafreq=betafreq[!betafreq$SNP=="1:116345120",]
+#betafreq=betafreq[!betafreq$SNP=="1:147599516",]
+# remove chr1
+betafreq=betafreq[betafreq$CHR==chrom,]
+betafreq=betafreq[with(betafreq, order(CHR, SNP)),]
+#betafreqp=merge(betafreq, p, by=c("SNP", "CHR"))
+#betafreq_noDARC=betafreq[!betafreq$SNP=="1:159204893",]
+#betafreq[betafreq$BETA <= (-0.5),]
+#betafreqp=betafreqp[with(betafreqp, order(CHR, BP)),]
+# sort by numerical SNP
+mat=getTerm4(betafreq)
+p=plot_mat(mat, title=paste0(trait, " Chr", chrom))
+return(p)}
+
+
+p_NEU= plot_chr_ld("NEU", 1) + geom_text(aes(x=17.5,y=17.5,#label = "1:159204893"
+                label="rs2814778"),
+            colour = "darkgrey", size=4,
+            hjust = 0, vjust = -0.1,
+            check_overlap = TRUE ) #SNP[17]
+p_NEU
+
+
+p_WBC=plot_chr_ld("WBC", 1) + 
+  geom_text(aes(x=21.5,y=21.5, #label = "1:159204893"
+                label="rs2814778"),
+            colour = "darkgrey", size=4,
+            hjust = 0, vjust = -0.1,
+            check_overlap = TRUE ) #SNP[21]
+p_WBC
+
+p_MON=plot_chr_ld("MON", 1) + 
+  geom_text(aes(x=14.5,y=14.5, #label = "1:159204893"
+                label="rs2814778"),
+            colour = "darkgrey", size=4, 
+            hjust = 0, vjust = -0.1,
+            check_overlap = TRUE ) #SNP[14]
+p_MON
+
+p_MCH=plot_chr_ld("MCH", 16) + 
+  geom_text(aes(x=5.5,y=5.5, #label = "16:249924"
+                label="rs13331259"),
+            colour = "darkgrey", size=4,
+            hjust = 0, vjust = -0.1, 
+            check_overlap = TRUE ) #SNP[5]
+p_MCH
+
+#ggsave(paste0(trait, "_chr_ldplot.png"), plot=p,
+#       width = 5, height = 3.5, dpi = 300, units = "in", device='png')
+```
+
+```{R}
+library(ggpubr)
+all=ggarrange(p_NEU, p_WBC, p_MON, p_MCH,
+          ncol = 2, nrow = 2,
+          labels = c("A", "B", "C", "D") )
+#ggsave("blc_vg4_ld.png", plot=all,
+       #width = 11, height = 8, dpi = 300, units = "in", device='png')
+ggsave("blc_vg4_ld.pdf", plot=all,
+       width = 11, height = 8, dpi = 300, units = "in", device='pdf')
+
+```
+
+
+
+
+
+
+
+
