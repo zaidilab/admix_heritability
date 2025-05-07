@@ -190,7 +190,7 @@ plt.vg = ggplot()+
         legend.title.position = "top", 
         legend.direction = "vertical",
         strip.background = element_blank(),
-        strip.text = element_blank())+
+        strip.text.y = element_blank())+
   scale_linetype_manual("Line", values = c('ghat' = 'solid', 'vg' = 'dashed'), 
                         labels = c('ghat' = "Estimate",'vg' = "True"), 
                         name = "Quantity")+
@@ -220,7 +220,7 @@ plt.gc = ggplot()+
         legend.title.position = "top", 
         legend.direction = "vertical",
         strip.background = element_blank(),
-        strip.text = element_blank())+
+        strip.text.y = element_blank())+
   scale_linetype_manual("Line", values = c('intercept' = 'dashed', 'x2' = 'solid'), 
                         labels = c('intercept' = bquote(lambda[ldsc]),'x2' = bquote(E(chi^2))), 
                         name = "Quantity")+
