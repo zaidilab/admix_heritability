@@ -183,20 +183,20 @@ plt.vg = ggplot()+
               aes(g, ymin = lci, ymax = uci, fill = trait), alpha = 0.2,
               show.legend = FALSE)+
   facet_grid(trait ~ model, 
-             labeller = as_labeller(c("max" = "Positive LD", "min" = "Negative LD",
+             labeller = as_labeller(c("max" = "Divergent", "min" = "Stabilizing",
                                       "HI" = "HI","CGF" = "CGF")))+
   theme_classic()+
   theme(legend.position ="bottom", 
         legend.title.position = "top", 
         legend.direction = "vertical",
-        strip.background.x = element_blank(),
-        strip.text = element_text(face = "bold"))+
+        strip.background = element_blank(),
+        strip.text = element_blank())+
   scale_linetype_manual("Line", values = c('ghat' = 'solid', 'vg' = 'dashed'), 
                         labels = c('ghat' = "Estimate",'vg' = "True"), 
                         name = "Quantity")+
-  labs(x = "t", y = bquote(V[g]), color = "Trait", linetype = "Quantity")+
+  labs(x = "t", y = bquote(V[g] ~ "(True or Estimated)"), color = "Trait", linetype = "Quantity")+
   scale_color_manual(values = c("#f4a582", "#92c5de"), 
-                     labels = c('min' = "Negative LD","max" = "Positive LD"))+
+                     labels = c('min' = "Stabilizing","max" = "Divergent"))+
   scale_fill_manual(values = c("#f4a582", "#92c5de"))
 
 #plot for genomic control
@@ -213,29 +213,29 @@ plt.gc = ggplot()+
               aes(g, ymin = lci, ymax = uci, fill = trait), alpha = 0.2,
               show.legend = FALSE)+
   facet_grid(trait ~ model, 
-             labeller = as_labeller(c("max" = "Negative LD", "min" = "Positive LD",
+             labeller = as_labeller(c("max" = "Divergent", "min" = "Stabilizing",
                                       "HI" = "HI","CGF" = "CGF")))+
   theme_classic()+
   theme(legend.position ="bottom", 
         legend.title.position = "top", 
         legend.direction = "vertical",
-        strip.background.x = element_blank(),
-        strip.text = element_text(face = "bold"))+
+        strip.background = element_blank(),
+        strip.text = element_blank())+
   scale_linetype_manual("Line", values = c('intercept' = 'dashed', 'x2' = 'solid'), 
                         labels = c('intercept' = bquote(lambda[ldsc]),'x2' = bquote(E(chi^2))), 
                         name = "Quantity")+
-  labs(x = "t", y = bquote(E(chi^2)), color = "Trait", linetype = "Quantity")+
+  labs(x = "t", y = bquote(E(chi^2)~"or"~lambda[ldsc]), color = "Trait", linetype = "Quantity")+
   scale_color_manual(values = c("#f4a582", "#92c5de"), 
-                     labels = c('min' = "Negative LD","max" = "Positive LD"))+
+                     labels = c('min' = "Stabilizing","max" = "Divergent"))+
   scale_fill_manual(values = c("#f4a582", "#92c5de"))
 
 
 #make a single plot with estimated vg and gc
-plt_all = plt.vg + plt.gc + plot_annotation(tag_levels = 'a') & theme(plot.tag = element_text(size = 14, face = "bold", hjust=0, vjust=0))
+plt_all = plt.vg + plt.gc + plot_annotation(tag_levels = 'a') & theme(plot.tag = element_text(size = 14, face = "bold", hjust=0, vjust=0)) 
 
 
 
-ggsave(F("plots/plt_ldsc_main_poster.png"),plt_all, height = 5, width = 7)
+ggsave(F("plots/plt_ldsc_main_poster.pdf"),plt_all, height = 5, width = 7)
 
 
 #supplementary plot for all p=0.01, 0.05, 0.1
@@ -270,7 +270,7 @@ plt_all_p = ggplot()+
                      labels = c('min' = "Stabilizing","max" = "Divergent"))+
   scale_fill_manual(values = c("#f4a582", "#92c5de"))
 
-ggsave(F("plots/plt_ldsc_supp_all.png"),plt_all_p, height = 7, width = 4)
+ggsave(F("plots/plt_ldsc_supp_all.pdf"),plt_all_p, height = 7, width = 4)
 
 
 
